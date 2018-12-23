@@ -1,20 +1,25 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { Text, TextInput, View , SafeAreaView } from 'react-native';
 
-export default class FixedDimenstionBasics extends Component {
+export default class PizzaTranslator extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {text:''};
+  }
   render() {
     return (
-      // <View>
-      //   <View style={{width:50, height:50, backgroundColor:'powderblue'}} />
-      //   <View style={{width: 100, height: 100, backgroundColor: 'skyblue'}} />
-      //   <View style={{width: 150, height: 150, backgroundColor: 'steelblue'}} />
-      // </View>
-
-      <View style={{flex:1, flexDirection: 'column', justifyContent: 'center', alignItems: 'stretch'}}>
-        <View style={{width:50, height:50, backgroundColor: 'skyblue'}} />
-        <View style={{height: 50, backgroundColor: 'powderblue'}} />
-        <View style={{height: 50, backgroundColor: 'steelblue'}} />
+      <SafeAreaView style={{flex:1, backgroundColor: '#e6e6e6'}}>
+      <View style={{padding: 10}}>
+        <TextInput
+          style={{height:40}}
+          placeholder="Type here to translate!"
+          onChangeText={(text) => {this.setState({text})}}
+        />
+        <Text style={{padding: 10, fontSize:42}}>
+          {this.state.text.split(' ').map((word) => word && '🍕').join(' ')}
+        </Text>
       </View>
+      </SafeAreaView>
     )
   }
 }
