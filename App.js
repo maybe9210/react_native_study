@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { SafeAreaView, FlatList, ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-
+import { Hello } from './hello';
 export default class FetchExample extends Component {
   constructor(props) {
     super(props);
@@ -32,6 +32,7 @@ export default class FetchExample extends Component {
 
     return(
       <View style={{flex: 1, paddingTop:20}}>
+        <Hello  name='tester01' enthusiasmLevel={10} />
         <FlatList
           data={this.state.dataSource}
           renderItem={({item}) => <Text>{item.title}, {item.releaseYear}</Text>}
