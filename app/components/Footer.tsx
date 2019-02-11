@@ -1,5 +1,5 @@
-import React, { Component, PropTypes } from 'react'
-import { TouchableOpacity, Text, StyleSheet } from 'react-native'
+import React, { Component, /*PropTypes*/ } from 'react'
+import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent } from 'react-native'
 
 const styles = StyleSheet.create({
   footer: {
@@ -10,8 +10,8 @@ const styles = StyleSheet.create({
     color: '#CD5C5C',
   },
 })
-
-export default class Footer extends Component {
+type Callback = (event : GestureResponderEvent) => void;
+export default class Footer extends Component<{onRemoveCompleted : Callback}> {
 
   // static propTypes = {
   //   onRemoveCompleted: PropTypes.func,

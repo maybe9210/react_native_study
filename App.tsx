@@ -22,19 +22,25 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-
-export default class App extends Component {
+interface Item {
+  completed : boolean,
+  label : string
+}
+interface Props {
+  items : Item[]
+}
+export default class App extends Component<Props> {
   
 
-  addItem = (item) => {
+  addItem = (item : Item) => {
     
   }
 
-  removeItem = (index) => {
+  removeItem = (index : number) => {
     
   }
 
-  toggleItemCompleted = (index) => {
+  toggleItemCompleted = (index : number) => {
     
   }
 
@@ -42,18 +48,21 @@ export default class App extends Component {
     
   }
   render() {
-    // const {items} = this.props
-    const {items} = {
-      items: [
-        {
-          label : "test 1",
-          completed: false
-        },{
-          label : "test 2",
-          completed: false
-        }
-      ]
-    };
+    const {items} = this.props
+    // const {items} = {
+    //   items: [
+    //     {
+    //       label : "test 1",
+    //       completed: false
+    //     },{
+    //       label : "test 2",
+    //       completed: false
+    //     }, {
+    //       label : "test 3",
+    //       completed: true
+    //     }
+    //   ]
+    // };
 
     return (
       <View style={styles.container}>

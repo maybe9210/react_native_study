@@ -1,5 +1,6 @@
-import React, { Component, PropTypes } from 'react'
-import { View, StyleSheet, TouchableOpacity } from 'react-native'
+import React from 'react'
+import { Component, /*PropTypes*/ } from 'react'
+import { View, StyleSheet, TouchableOpacity, GestureResponderEvent } from 'react-native'
 
 const styles = StyleSheet.create({
   box: {
@@ -14,8 +15,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.8)',
   },
 })
+type Callback = (event : GestureResponderEvent) => void;
 
-export default class Checkbox extends Component {
+export default class Checkbox extends Component<{onToggle : Callback, isChecked : boolean}> {
 
   // static propTypes = {
   //   onToggle: PropTypes.func,
@@ -23,7 +25,7 @@ export default class Checkbox extends Component {
   // }
 
   render() {
-    const {onToggle, isChecked} = this.props
+    const {onToggle , isChecked } = this.props;
 
     return (
       <TouchableOpacity onPress={onToggle}>

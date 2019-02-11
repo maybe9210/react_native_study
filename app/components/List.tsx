@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component, /*PropTypes*/ } from 'react'
 import {
   View,
   Text,
@@ -35,16 +35,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.8)',
   },
 })
+interface Item {
+  completed : boolean,
+  label : string
+}
+type ItemCallback = (index : number) => void;
 
-export default class List extends Component {
-
+export default class List extends Component <{
+  onToggleItemCompleted : ItemCallback, onRemoveItem : ItemCallback, items: Item[]}>{
   // static propTypes = {
+
   //   items: PropTypes.array.isRequired,
   //   onRemoveItem: PropTypes.func.isRequired,
   //   onToggleItemCompleted: PropTypes.func.isRequired,
   // }
 
-  renderItem = (item, i) => {
+  renderItem = (item : Item, i : number) => {
     const {onToggleItemCompleted, onRemoveItem} = this.props
     const itemStyle = item.completed ? [styles.item, styles.completed] : styles.item
 

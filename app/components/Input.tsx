@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component, /*PropTypes*/ } from 'react'
 import { TextInput, StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
@@ -6,9 +6,10 @@ const styles = StyleSheet.create({
     height: 50,
     padding: 15,
   },
-})
+});
+type Callback = (event : any) => void;
 
-export default class Input extends Component {
+export default class Input extends Component <{onSubmit : Callback, placeholder : string}>{
 
   // static propTypes = {
   //   onSubmit: PropTypes.func,
@@ -19,7 +20,7 @@ export default class Input extends Component {
     text: '',
   }
 
-  onChangeText = (text) => {
+  onChangeText = (text : string) => {
     this.setState({text})
   }
 
