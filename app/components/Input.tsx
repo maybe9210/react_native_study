@@ -8,41 +8,49 @@ const styles = StyleSheet.create({
   },
 });
 type Callback = (event : any) => void;
-
-export default class Input extends Component <{onSubmit : Callback, placeholder : string}>{
+interface Props {
+  onSubmit : Callback, 
+  placeholder : string
+}
+interface State {
+  inputText: string
+}
+export default class Input extends Component <Props, State>{
 
   // static propTypes = {
   //   onSubmit: PropTypes.func,
   //   placeholder: PropTypes.string,
   // }
-
-  state = {
-    text: '',
+  constructor(props: Props){
+    super(props);
+    this.state = {
+      inputText : ''
+    };
   }
 
   onChangeText = (text : string) => {
-    this.setState({text})
+    this.setState({inputText: text})
   }
 
   onSubmitEditing = () => {
     const {onSubmit} = this.props
-    const {text} = this.state
+    const {inputText} = this.state
 
-    if (!text) return
-
-    onSubmit(text)
-    this.setState({text: ''})
+    
+    if (!inputText) return
+    onSubmit(inputText)
+    this.setState({inputText: ''})
   }
 
   render() {
     const {onSubmit, placeholder} = this.props
-    const {text} = this.state
+    const {inputText} = this.state
 
     return (
       <TextInput
         style={styles.input}
         placeholder={placeholder}
-        value={text}
+        value={inputText}
         onChangeText={this.onChangeText}
         onSubmitEditing={this.onSubmitEditing}
         blurOnSubmit={false}

@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   completed: {
     backgroundColor: 'rgba(0,0,0,0.8)',
-  },
+  }
 })
 interface Item {
   completed : boolean,
@@ -54,6 +54,7 @@ export default class List extends Component <{
     const {onToggleItemCompleted, onRemoveItem} = this.props
     const itemStyle = item.completed ? [styles.item, styles.completed] : styles.item
 
+    console.log(item.label, item.completed);
     return (
       <View key={i} style={itemStyle}>
         <Text> {item.label} </Text>

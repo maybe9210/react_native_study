@@ -27,42 +27,59 @@ interface Item {
   label : string
 }
 interface Props {
+
+}
+interface State {
   items : Item[]
 }
-export default class App extends Component<Props> {
-  
+export default class App extends Component<Props, State> {
+  constructor(props : Props){
+    super(props);
+    this.state = {
+      items: []
+    }
+  }
 
-  addItem = (item : Item) => {
-    
+  addItem = (inputText : string) => {
+    const {items} = this.state;
+
+    this.setState({
+      items : [{label: inputText, completed: false}, ...items]
+    });
   }
 
   removeItem = (index : number) => {
-    
+    const { items } = this.state;
+    this.setState({
+      items : items.filter((item, i) => i !== index)
+    });
   }
 
   toggleItemCompleted = (index : number) => {
-    
+    const { items } = this.state;
+
+    this.setState({
+      items: items.map((item, i)=>{
+        if(index === i) {
+          return {
+            label : item.label,
+            completed : !item.completed
+          }
+        }
+        return item;
+      })
+    })
   }
 
   removeCompleted = () => {
+    const {items} = this.state;
     
+    this.setState({
+      items: items.filter((item, i) => item.completed === false)
+    })
   }
   render() {
-    const {items} = this.props
-    // const {items} = {
-    //   items: [
-    //     {
-    //       label : "test 1",
-    //       completed: false
-    //     },{
-    //       label : "test 2",
-    //       completed: false
-    //     }, {
-    //       label : "test 3",
-    //       completed: true
-    //     }
-    //   ]
-    // };
+    const {items} = this.state;
 
     return (
       <View style={styles.container}>
