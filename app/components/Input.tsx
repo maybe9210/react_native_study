@@ -1,5 +1,7 @@
 import React, { Component, /*PropTypes*/ } from 'react'
 import { TextInput, StyleSheet } from 'react-native'
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
 
 const styles = StyleSheet.create({
   input: {
@@ -15,6 +17,7 @@ interface Props {
 interface State {
   inputText: string
 }
+@observer
 export default class Input extends Component <Props, State>{
 
   // static propTypes = {

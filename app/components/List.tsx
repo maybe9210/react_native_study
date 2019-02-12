@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 
 import Checkbox from './Checkbox'
+import { observer } from 'mobx-react';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,6 +42,7 @@ interface Item {
 }
 type ItemCallback = (index : number) => void;
 
+@observer
 export default class List extends Component <{
   onToggleItemCompleted : ItemCallback, onRemoveItem : ItemCallback, items: Item[]}>{
   // static propTypes = {

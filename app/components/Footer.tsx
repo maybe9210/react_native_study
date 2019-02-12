@@ -1,5 +1,6 @@
 import React, { Component, /*PropTypes*/ } from 'react'
 import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent } from 'react-native'
+import { observer } from 'mobx-react';
 
 const styles = StyleSheet.create({
   footer: {
@@ -11,6 +12,7 @@ const styles = StyleSheet.create({
   },
 })
 type Callback = (event : GestureResponderEvent) => void;
+@observer
 export default class Footer extends Component<{onRemoveCompleted : Callback}> {
 
   // static propTypes = {
