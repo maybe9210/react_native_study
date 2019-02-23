@@ -9,7 +9,7 @@
 
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
-import { observer } from 'mobx-react';
+import { observer, inject, Provider } from 'mobx-react';
 
 import Title from './app/components/Title';
 import Input from './app/components/Input';
@@ -32,14 +32,16 @@ interface Item {
 }
 
 interface Props {
-  // store : any
+  store? : ItemStore
 }
 interface State {
   items : Item[]
 }
+
+@inject("store")
 @observer
-export default class App extends Component<Props, State> {
-  private store: ItemStore = new ItemStore();
+class Container extends Component<Props, State> {
+  // private store: ItemStore = new ItemStore();
   @observable items = [];
   constructor(props : Props){
     super(props);
@@ -87,36 +89,47 @@ export default class App extends Component<Props, State> {
     })
   }
   render() {
-    const {items} = this.state;
-    // const store = this.props.store;
+    // const {items} = this.state;
+    const store = this.props.store as ItemStore;
     
     return (
       <View style={styles.container}>
         <Title> Todo List </Title>
         <Input
           placeholder={'Enter an item!'}
-          onSubmit={this.store.addTodo.bind(this.store)}
+          onSubmit={store.addTodo.bind(store)}
           // onSubmit={this.addItem}
-        />
+          />
         <View style={styles.divider}/>
         <List
           // items={items}
           // onRemoveItem={this.removeItem}
           // onToggleItemCompleted={this.toggleItemCompleted}
-          items={this.store.items}
-          onRemoveItem={this.store.removeItem.bind(this.store)}
-          onToggleItemCompleted={this.store.toggleCompleted.bind(this.store)}
-        />
+          items={store.items}
+          onRemoveItem={store.removeItem.bind(store)}
+          onToggleItemCompleted={store.toggleCompleted.bind(store)}
+          />
         <View style={styles.divider} />
         <Footer 
           // onRemoveCompleted={this.removeCompleted} 
-          onRemoveCompleted={this.store.removeCompleted.bind(this.store)} 
-        />
+          onRemoveCompleted={store.removeCompleted.bind(store)} 
+          />
       </View>
     )
   }
 }
-
+const itemStore = new ItemStore();
+export default class App extends Component{
+  render(){
+    return(
+      <Provider store={itemStore}>
+        <Container/>
+      </Provider>
+    )
+  }
+} 
+ 
+  
 const styles = StyleSheet.create({
   container: {
     flex: 1,
