@@ -6,10 +6,10 @@ interface Item {
 }
 
 class ItemStore {
-  items : Item[];
+  items = observable<Item>([]);
 
   constructor() { 
-    this.items = observable([{label:'test', completed: false}]);
+    // this.items = observable([]);
   }
   
   @action
