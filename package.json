@@ -8,10 +8,15 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.3.0",
+    "apollo-boost": "^0.1.28",
+    "apollo-link-error": "^1.1.7",
+    "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1",
     "mobx": "^5.9.0",
     "mobx-react": "^5.4.3",
     "react": "16.6.3",
-    "react-native": "0.58.3"
+    "react-apollo": "^2.4.1",
+    "react-native": "^0.58.5"
   },
   "devDependencies": {
     "@types/react": "^16.8.2",

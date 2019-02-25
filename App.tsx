@@ -19,6 +19,10 @@ import Footer from './app/components/Footer';
 import ItemStore from './app/mobx/ItemStore';
 import { observable } from 'mobx';
 
+import {ApolloClient, HttpLink, InMemoryCache, ApolloLink, gql} from 'apollo-boost';
+import { onError } from 'apollo-link-error';
+import {ApolloProvider, Query} from 'react-apollo';
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -38,58 +42,37 @@ interface State {
   items : Item[]
 }
 
+const httpLink = new HttpLink({
+  uri : 'https://api-apeast.graphcms.com/v1/cjshaau0241lj01ckeov1u72p/master',
+  headers : {
+    authorization : `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2ZXJzaW9uIjoxLCJ0b2tlbklkIjoiNmMyY2I2OWMtNTVmNi00YmViLTkxYzktNTM2YzNiODlhMzQxIn0._zvbPaJoPnivqMEQI5vr4cdylOBODtRoH_G3M7ADp3M`
+  }
+});
+const cache = new InMemoryCache();
+
+const errorLink = onError(({ graphQLErrors, networkError}) =>{
+  if (graphQLErrors){
+
+  }
+
+  if (networkError){
+
+  }
+});
+const link = ApolloLink.from([errorLink, httpLink]);
+const client = new ApolloClient({
+  link,
+  cache
+});
+
 @inject("store")
 @observer
 class Container extends Component<Props, State> {
-  // private store: ItemStore = new ItemStore();
-  @observable items = [];
   constructor(props : Props){
     super(props);
-    this.state = {
-      items: []
-    }
   }
 
-  addItem = (inputText : string) => {
-    const {items} = this.state;
-
-    this.setState({
-      items : [{label: inputText, completed: false}, ...items]
-    });
-  }
-
-  removeItem = (index : number) => {
-    const { items } = this.state;
-    this.setState({
-      items : items.filter((item, i) => i !== index)
-    });
-  }
-
-  toggleItemCompleted = (index : number) => {
-    const { items } = this.state;
-
-    this.setState({
-      items: items.map((item, i)=>{
-        if(index === i) {
-          return {
-            label : item.label,
-            completed : !item.completed
-          }
-        }
-        return item;
-      })
-    })
-  }
-
-  removeCompleted = () => {
-    const {items} = this.state;
-    
-    this.setState({
-      items: items.filter((item, i) => item.completed === false)
-    })
-  }
   render() {
-    // const {items} = this.state;
     const store = this.props.store as ItemStore;
     
     return (
@@ -98,33 +81,68 @@ class Container extends Component<Props, State> {
         <Input
           placeholder={'Enter an item!'}
           onSubmit={store.addTodo.bind(store)}
-          // onSubmit={this.addItem}
           />
         <View style={styles.divider}/>
         <List
-          // items={items}
-          // onRemoveItem={this.removeItem}
-          // onToggleItemCompleted={this.toggleItemCompleted}
           items={store.items}
           onRemoveItem={store.removeItem.bind(store)}
           onToggleItemCompleted={store.toggleCompleted.bind(store)}
           />
         <View style={styles.divider} />
-        <Footer 
-          // onRemoveCompleted={this.removeCompleted} 
+        <Footer  
           onRemoveCompleted={store.removeCompleted.bind(store)} 
           />
       </View>
     )
   }
 }
+const GET_TODOSES = gql`
+{
+  todoses {
+    completed
+    label
+  }
+}`;
+
+@inject("store")
+class MobxContainer extends Component<Props,State> {
+  constructor(props : Props){
+    super(props);
+  }
+  render() {
+    const store = this.props.store as ItemStore;
+    console.log("store", store)
+    return (
+      <Query query ={GET_TODOSES}>
+        {({data, loading, error}) => {
+          if(error) {
+            store.addTodo(error.message);
+            return (<Container />);
+          }
+          const {todoses} = data;
+          if(loading || !todoses){
+            store.addTodo("Loading ....");
+            return (<Container />)
+          }
+          
+          store.setTodos(todoses);
+          return (
+            <Container />
+          ); 
+        }}
+      </Query>
+    );
+  }
+}
 const itemStore = new ItemStore();
 export default class App extends Component{
   render(){
     return(
-      <Provider store={itemStore}>
-        <Container/>
-      </Provider>
+      <ApolloProvider client={client}>
+        <Provider store={itemStore}>
+          <MobxContainer/>
+        </Provider>
+      </ApolloProvider>
     )
   }
 } 

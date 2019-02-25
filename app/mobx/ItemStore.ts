@@ -1,4 +1,5 @@
 import {observable, computed, action, extendObservable} from 'mobx';
+import { Observable } from 'apollo-link';
 
 interface Item {
   completed : boolean,
@@ -8,10 +9,14 @@ interface Item {
 class ItemStore {
   items = observable<Item>([]);
 
-  constructor() { 
-    // this.items = observable([]);
+  constructor( /*todoses : Item[]*/) { 
+    // this.items.replace(todoses);
   }
   
+  @action
+  setTodos(todos : Item[]){
+    this.items.replace(todos);
+  }
   @action
   addTodo(input : string) : void {
     
