@@ -28,8 +28,18 @@ const REMOVE_TODO = gql`
   }
 `;
 
+const CREATE_TODO = gql`
+  mutation CreateTodo($data : TodosCreateInput!) {
+    createTodos(data : $data) {
+      label
+      completed
+    }
+  }
+`;
+
 export default {
   GET_TODOSES,
   UPDATE_COMPLETE,
-  REMOVE_TODO
+  REMOVE_TODO,
+  CREATE_TODO
 }

@@ -2,6 +2,9 @@ import React, { Component, /*PropTypes*/ } from 'react'
 import { TextInput, StyleSheet } from 'react-native'
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
+import { Mutation } from 'react-apollo';
+
+import SCHEMA from '../graphql/todosShema';
 
 const styles = StyleSheet.create({
   input: {
@@ -35,29 +38,47 @@ export default class Input extends Component <Props, State>{
     this.setState({inputText: text})
   }
 
-  onSubmitEditing = () => {
+  onSubmitEditing = (inputLabel : string) => {
     const {onSubmit} = this.props
-    const {inputText} = this.state
+    // const {inputText} = this.state
 
     
-    if (!inputText) return
-    onSubmit(inputText)
+    // if (!inputText) return
+    onSubmit(inputLabel)
     this.setState({inputText: ''})
   }
 
   render() {
-    const {onSubmit, placeholder} = this.props
-    const {inputText} = this.state
+    const { onSubmit, placeholder } = this.props
+    const { inputText } = this.state
 
     return (
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        value={inputText}
-        onChangeText={this.onChangeText}
-        onSubmitEditing={this.onSubmitEditing}
-        blurOnSubmit={false}
-      />
+      <Mutation mutation={SCHEMA.CREATE_TODO}>
+      {(createTodo, res) => (    
+          <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          value={inputText}
+          onChangeText={this.onChangeText}
+          onSubmitEditing={() => {
+            if(!inputText){
+              return;
+            }
+            createTodo({variables : {
+              data : {
+                label : inputText,
+                completed : false
+              }
+            }});
+            // onSubmit(inputText);
+
+            console.log("res : ", res);
+            this.onSubmitEditing(inputText);
+          }}
+          blurOnSubmit={false}
+          />
+      )}
+      </Mutation>
     )
   }
 }

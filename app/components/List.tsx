@@ -66,7 +66,7 @@ export default class List extends Component <{
         <Text> {item.label} </Text>
         <View style={styles.rightSection}>
           <Mutation mutation={SCHEMA.UPDATE_COMPLETE}>
-          {(updateComplete, {data}) => (
+          {(updateComplete, res) => (
             <Checkbox
             isChecked={item.completed}
             onToggle={() => {
@@ -82,14 +82,14 @@ export default class List extends Component <{
               onToggleItemCompleted(i);
 
               console.log("updateComplete finish")
-              console.log("data : ", data)
+              console.log("res : ", res)
             }}
             />
           )}
           </Mutation>
           <Mutation mutation={SCHEMA.REMOVE_TODO}>
           {
-            (removeTodos, { data }) => (
+            (removeTodos, res) => (
             <TouchableOpacity onPress={
                 () => {
                   console.log("request 'removeTodos' with ", item);
@@ -100,7 +100,7 @@ export default class List extends Component <{
                   }})
                   onRemoveItem(i)
                   console.log("removeTodos finish");
-                  console.log("data : ", data);
+                  console.log("res : ", res);
                 }
               }>
               <Text style={styles.remove}> &times; </Text>
