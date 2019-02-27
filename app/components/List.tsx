@@ -9,6 +9,8 @@ import {
 
 import Checkbox from './Checkbox'
 import { observer } from 'mobx-react';
+import SCHEMA from '../graphql/todosShema';
+import { Mutation } from 'react-apollo';
 
 const styles = StyleSheet.create({
   container: {
@@ -38,7 +40,8 @@ const styles = StyleSheet.create({
 })
 interface Item {
   completed : boolean,
-  label : string
+  label : string,
+  id? : string
 }
 type ItemCallback = (index : number) => void;
 
@@ -56,18 +59,54 @@ export default class List extends Component <{
     const {onToggleItemCompleted, onRemoveItem} = this.props
     const itemStyle = item.completed ? [styles.item, styles.completed] : styles.item
 
-    console.log(item.label, item.completed);
+    // console.log(item.label, item.completed);
+    // console.log('id : ', item.id);
     return (
       <View key={i} style={itemStyle}>
         <Text> {item.label} </Text>
         <View style={styles.rightSection}>
-          <Checkbox
+          <Mutation mutation={SCHEMA.UPDATE_COMPLETE}>
+          {(updateComplete, {data}) => (
+            <Checkbox
             isChecked={item.completed}
-            onToggle={() => onToggleItemCompleted(i)}
-          />
-          <TouchableOpacity onPress={() => onRemoveItem(i)}>
-            <Text style={styles.remove}> &times; </Text>
-          </TouchableOpacity>
+            onToggle={() => {
+              console.log("request 'updateComplette' with ", item);
+              updateComplete({variables : {
+                data : {
+                  completed : !item.completed
+                },
+                where : {
+                  id : item.id
+                }
+              }})
+              onToggleItemCompleted(i);
+
+              console.log("updateComplete finish")
+              console.log("data : ", data)
+            }}
+            />
+          )}
+          </Mutation>
+          <Mutation mutation={SCHEMA.REMOVE_TODO}>
+          {
+            (removeTodos, { data }) => (
+            <TouchableOpacity onPress={
+                () => {
+                  console.log("request 'removeTodos' with ", item);
+                  removeTodos({variables : {
+                    where : {
+                      id : item.id
+                    }
+                  }})
+                  onRemoveItem(i)
+                  console.log("removeTodos finish");
+                  console.log("data : ", data);
+                }
+              }>
+              <Text style={styles.remove}> &times; </Text>
+            </TouchableOpacity>)
+          }
+          </Mutation>
         </View>
       </View>
     )

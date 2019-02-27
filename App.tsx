@@ -23,6 +23,8 @@ import {ApolloClient, HttpLink, InMemoryCache, ApolloLink, gql} from 'apollo-boo
 import { onError } from 'apollo-link-error';
 import {ApolloProvider, Query} from 'react-apollo';
 
+import SCHEMA from './app/graphql/todosShema';
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -96,13 +98,6 @@ class Container extends Component<Props, State> {
     )
   }
 }
-const GET_TODOSES = gql`
-{
-  todoses {
-    completed
-    label
-  }
-}`;
 
 @inject("store")
 class MobxContainer extends Component<Props,State> {
@@ -113,7 +108,7 @@ class MobxContainer extends Component<Props,State> {
     const store = this.props.store as ItemStore;
     console.log("store", store)
     return (
-      <Query query ={GET_TODOSES}>
+      <Query query ={SCHEMA.GET_TODOSES}>
         {({data, loading, error}) => {
           if(error) {
             store.addTodo(error.message);
@@ -121,8 +116,8 @@ class MobxContainer extends Component<Props,State> {
           }
           const {todoses} = data;
           if(loading || !todoses){
-            store.addTodo("Loading ....");
-            return (<Container />)
+            // store.addTodo("Loading ....");
+            return (<View style={styles.loading}><Text>Loading</Text></View>)
           }
           
           store.setTodos(todoses);
@@ -157,4 +152,10 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
+  loading : {
+    flex : 1,
+    backgroundColor: 'rgba(255,255,255,1.0)',
+    justifyContent : 'center',
+    alignItems : 'center'
+  }
 });
