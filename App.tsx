@@ -37,6 +37,9 @@ interface State {
 class Container extends Component<Props, State> {
   constructor(props : Props){
     super(props);
+    const store = this.props.store as ItemStore;
+    
+    store.getAllTodos();
   }
 
   render() {

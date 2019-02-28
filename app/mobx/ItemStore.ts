@@ -30,7 +30,6 @@ const link = ApolloLink.from([errorLink, httpLink]);
 
 const operation = {
   query : SCHEMA.GET_TODOSES,
-  operationName : "get_todos"
 }
 
 class ItemStore {
@@ -39,17 +38,25 @@ class ItemStore {
   isLoading : boolean = false;
 
   constructor( /*todoses : Item[]*/) { 
-    // this.items.replace(todoses);
+    // this.items.replace(todoses);  
+  }
+  
+  @action
+  getAllTodos() {
     execute(link, operation).subscribe({
-      next: data => console.log(`received data: ${JSON.stringify(data, null, 2)}`),
+      next: ({data}) => {
+        console.log(`received data: ${JSON.stringify(data, null, 2)}`)
+        this.setTodos(data.todoses);
+      },
       error: error => console.log(`received error ${error}`),
       complete: () => console.log(`complete`),
     })
   }
-  
   @action
   setTodos(todos : Item[]){
-    this.items.replace(todos);
+    todos.map((item, index) => {
+      this.items.push(item);
+    })
   }
   @action
   addTodo(input : string) : void {
