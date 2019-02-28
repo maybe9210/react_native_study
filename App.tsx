@@ -17,20 +17,6 @@ import List from './app/components/List';
 import Footer from './app/components/Footer';
 
 import ItemStore from './app/mobx/ItemStore';
-import { observable } from 'mobx';
-
-import {ApolloClient, HttpLink, InMemoryCache, ApolloLink, gql} from 'apollo-boost';
-import { onError } from 'apollo-link-error';
-import {ApolloProvider, Query} from 'react-apollo';
-
-import SCHEMA from './app/graphql/todosShema';
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
 
 interface Item {
   completed : boolean,
@@ -44,28 +30,7 @@ interface State {
   items : Item[]
 }
 
-const httpLink = new HttpLink({
-  uri : 'https://api-apeast.graphcms.com/v1/cjshaau0241lj01ckeov1u72p/master',
-  headers : {
-    authorization : `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2ZXJzaW9uIjoxLCJ0b2tlbklkIjoiNmMyY2I2OWMtNTVmNi00YmViLTkxYzktNTM2YzNiODlhMzQxIn0._zvbPaJoPnivqMEQI5vr4cdylOBODtRoH_G3M7ADp3M`
-  }
-});
-const cache = new InMemoryCache();
 
-const errorLink = onError(({ graphQLErrors, networkError}) =>{
-  if (graphQLErrors){
-
-  }
-
-  if (networkError){
-
-  }
-});
-const link = ApolloLink.from([errorLink, httpLink]);
-const client = new ApolloClient({
-  link,
-  cache
-});
 
 @inject("store")
 @observer
@@ -98,46 +63,13 @@ class Container extends Component<Props, State> {
     )
   }
 }
-
-@inject("store")
-class MobxContainer extends Component<Props,State> {
-  constructor(props : Props){
-    super(props);
-  }
-  render() {
-    const store = this.props.store as ItemStore;
-    console.log("store", store)
-    return (
-      <Query query ={SCHEMA.GET_TODOSES}>
-        {({data, loading, error}) => {
-          if(error) {
-            store.addTodo(error.message);
-            return (<Container />);
-          }
-          const {todoses} = data;
-          if(loading || !todoses){
-            // store.addTodo("Loading ....");
-            return (<View style={styles.loading}><Text>Loading</Text></View>)
-          }
-          
-          store.setTodos(todoses);
-          return (
-            <Container />
-          ); 
-        }}
-      </Query>
-    );
-  }
-}
 const itemStore = new ItemStore();
 export default class App extends Component{
   render(){
     return(
-      <ApolloProvider client={client}>
         <Provider store={itemStore}>
-          <MobxContainer/>
+          <Container/>
         </Provider>
-      </ApolloProvider>
     )
   }
 } 

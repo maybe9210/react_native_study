@@ -10,7 +10,6 @@ import {
 import Checkbox from './Checkbox'
 import { observer } from 'mobx-react';
 import SCHEMA from '../graphql/todosShema';
-import { Mutation } from 'react-apollo';
 
 const styles = StyleSheet.create({
   container: {
@@ -65,48 +64,13 @@ export default class List extends Component <{
       <View key={i} style={itemStyle}>
         <Text> {item.label} </Text>
         <View style={styles.rightSection}>
-          <Mutation mutation={SCHEMA.UPDATE_COMPLETE}>
-          {(updateComplete, res) => (
-            <Checkbox
-            isChecked={item.completed}
-            onToggle={() => {
-              console.log("request 'updateComplette' with ", item);
-              updateComplete({variables : {
-                data : {
-                  completed : !item.completed
-                },
-                where : {
-                  id : item.id
-                }
-              }})
-              onToggleItemCompleted(i);
-
-              console.log("updateComplete finish")
-              console.log("res : ", res)
-            }}
-            />
-          )}
-          </Mutation>
-          <Mutation mutation={SCHEMA.REMOVE_TODO}>
-          {
-            (removeTodos, res) => (
-            <TouchableOpacity onPress={
-                () => {
-                  console.log("request 'removeTodos' with ", item);
-                  removeTodos({variables : {
-                    where : {
-                      id : item.id
-                    }
-                  }})
-                  onRemoveItem(i)
-                  console.log("removeTodos finish");
-                  console.log("res : ", res);
-                }
-              }>
-              <Text style={styles.remove}> &times; </Text>
-            </TouchableOpacity>)
-          }
-          </Mutation>
+          <Checkbox
+          isChecked={item.completed}
+          onToggle={() => onToggleItemCompleted(i)}
+          />
+          <TouchableOpacity onPress={()=>onRemoveItem(i)}>
+            <Text style={styles.remove}> &times; </Text>
+          </TouchableOpacity>
         </View>
       </View>
     )
