@@ -1,5 +1,5 @@
 import { observable, action } from 'mobx';
-import { getTodos } from '../graphql/schemaTodos';
+import { getTodos, createTodo, updateCompleted, removeTodo, removeManyTodos } from '../graphql/schemaTodos';
 import { Item } from '../const';
 
 export class ItemStore {
@@ -20,31 +20,75 @@ export class ItemStore {
   }
   @action
   setTodos(todos : Item[]){
-    todos.map((item, index) => {
-      this.items.push(item);
-    })
+    this.items.replace(todos.reverse());
   }
   @action
   addTodo(input : string) : void {
-    this.items.unshift({label: input, completed: false});
+    createTodo({label : input, completed : false}, {
+      next : ({data}) => {
+        console.log(JSON.stringify(data));
+        this.items.unshift(data.createTodos);
+      },
+      error : (err) => {
+        console.log(err);
+      }
+    });
   };
 
   @action
   removeItem(index : number) : void{
-    const result :any= this.items.filter((item, i) => i !== index)
-    this.items.replace(result);
+    const {id} = this.items[index];
+    removeTodo({id},{
+      next : ({data, errors}) => {
+        if(errors) {
+          console.error(errors);
+        }
+        console.log(JSON.stringify(data));
+
+        const {id} = data.deleteTodos;
+        const result = this.items.filter((item, index) => item.id !== id);
+        this.items.replace(result);
+        
+      }, error : (err) => {
+        console.error(err);
+      }
+    })
+    // const result :any= this.items.filter((item, i) => i !== index)
+    // this.items.replace(result);
     // extendObservable(this.items, result); 
   };
 
   @action
   toggleCompleted(index : number) : void { 
-    this.items[index].completed = !this.items[index].completed;
+    const {completed, id} = this.items[index];
+    updateCompleted({completed : !completed, id},{
+      next : ({data, errors}) => {
+        if(errors) {
+          console.error(errors);
+        }
+        console.log(JSON.stringify(data));
+        const {completed} = data.updateTodos;
+        this.items[index].completed = completed;
+      },
+      error : (err) => {
+        console.log(err);
+      }
+    })
   };
 
-  @action
   removeCompleted() : void {
-    const result = this.items.filter((item, i) => item.completed === false);
-    this.items.replace(result);
-    // extendObservable(this.items, result);
+    removeManyTodos({completed_not : false}, {
+      next : ({data, errors, loading}) => {
+        if(errors) {
+          console.error(errors);
+        }
+        if(loading){
+          console.log("Now loading");
+        }
+        
+        console.log(JSON.stringify(data));
+        this.getAllTodos();
+      }
+    })
   }
 }

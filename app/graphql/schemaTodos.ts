@@ -2,8 +2,6 @@ import { gql } from 'apollo-boost';
 import { ApolloLink, execute, GraphQLRequest } from 'apollo-link';
 import { HttpLink, InMemoryCache } from 'apollo-boost';
 import { onError } from 'apollo-link-error';
-import { VariableValue } from 'apollo-utilities';
-import { Item, ItemCallback } from '../const';
 
 const GET_TODOSES = gql`
   query {
@@ -36,8 +34,17 @@ const REMOVE_TODO = gql`
 const CREATE_TODO = gql`
   mutation CreateTodo($data : TodosCreateInput!) {
     createTodos(data : $data) {
+      id
       label
       completed
+    }
+  }
+`;
+
+const DELETE_MANY_TODOS = gql`
+  mutation DeleteManyTodos($where : TodosWhereInput) {
+    deleteManyTodoses(where : $where){
+      count
     }
   }
 `;
@@ -61,12 +68,12 @@ const errorLink = onError(({ graphQLErrors, networkError}) =>{
 });
 const link = ApolloLink.from([errorLink, httpLink]);
 
-interface operation {
+type operation = {
   query : GraphQLRequest,
-  variable? : any
+  variables? : any
 };
 
-interface response {
+type response = {
   next : (value: any) => void,
   error? : ((error: any) => void | undefined) | undefined,
   complete?: () => void
@@ -80,12 +87,53 @@ export function getTodos(res : response) {
   return makeSchema(operation, res);
 }
 
-export function createTodo(variable: Item, res:response) {
-  
+export function createTodo(chunk: {label : string, completed? : boolean | false}, res:response) {  
+  console.log(chunk);
   const operation = {
     query : CREATE_TODO,
-    variable
+    variables : {
+      data : chunk
+    }
   }
   return makeSchema(operation, res);  
 }
 
+export function updateCompleted(chunk:{completed : boolean, id: string}, res : response) {
+  console.log(chunk);
+  const operation = {
+    query : UPDATE_COMPLETE,
+    variables : {
+      data : {
+        completed : chunk.completed
+      },
+      where : {
+        id : chunk.id
+      }
+    }
+  }
+  return makeSchema(operation, res);
+}
+
+export function removeTodo(chunk : {id : string}, res : response) {
+  console.log(chunk);
+  const operation = {
+    query : REMOVE_TODO,
+    variables : {
+      where : {
+        id : chunk.id
+      }
+    }
+  }
+  return makeSchema(operation, res);
+}
+
+export function removeManyTodos(chunk : any, res : response) {
+  console.log(chunk);
+  const operation = {
+    query : DELETE_MANY_TODOS,
+    variables : {
+      where : chunk
+    }
+  }
+  return makeSchema(operation, res);
+}
