@@ -16,21 +16,15 @@ import Input from './app/components/Input';
 import List from './app/components/List';
 import Footer from './app/components/Footer';
 
-import ItemStore from './app/mobx/ItemStore';
+import { ItemStore } from './app/mobx/itemStore';
+import { Item } from './app/const';
 
-interface Item {
-  completed : boolean,
-  label : string
-}
-
-interface Props {
+type Props = {
   store? : ItemStore
 }
-interface State {
+type State = {
   items : Item[]
 }
-
-
 
 @inject("store")
 @observer

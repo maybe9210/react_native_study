@@ -9,7 +9,7 @@ import {
 
 import Checkbox from './Checkbox'
 import { observer } from 'mobx-react';
-import SCHEMA from '../graphql/todosShema';
+import { Item, ItemCallback } from '../const';
 
 const styles = StyleSheet.create({
   container: {
@@ -37,22 +37,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.8)',
   }
 })
-interface Item {
-  completed : boolean,
-  label : string,
-  id? : string
-}
-type ItemCallback = (index : number) => void;
 
 @observer
 export default class List extends Component <{
   onToggleItemCompleted : ItemCallback, onRemoveItem : ItemCallback, items: Item[]}>{
-  // static propTypes = {
-
-  //   items: PropTypes.array.isRequired,
-  //   onRemoveItem: PropTypes.func.isRequired,
-  //   onToggleItemCompleted: PropTypes.func.isRequired,
-  // }
 
   renderItem = (item : Item, i : number) => {
     const {onToggleItemCompleted, onRemoveItem} = this.props

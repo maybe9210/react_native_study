@@ -3,7 +3,6 @@ import { TextInput, StyleSheet } from 'react-native'
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 
-import SCHEMA from '../graphql/todosShema';
 
 const styles = StyleSheet.create({
   input: {

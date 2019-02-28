@@ -1,38 +1,8 @@
 import { observable, action } from 'mobx';
-import { ApolloLink, execute } from 'apollo-link';
-import { HttpLink, InMemoryCache } from 'apollo-boost';
-import { onError } from 'apollo-link-error';
-import SCHEMA from '../graphql/todosShema';
+import { getTodos } from '../graphql/schemaTodos';
+import { Item } from '../const';
 
-interface Item {
-  completed : boolean,
-  label : string
-}
-
-const httpLink = new HttpLink({
-  uri : 'https://api-apeast.graphcms.com/v1/cjshaau0241lj01ckeov1u72p/master',
-  headers : {
-    authorization : `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ2ZXJzaW9uIjoxLCJ0b2tlbklkIjoiNmMyY2I2OWMtNTVmNi00YmViLTkxYzktNTM2YzNiODlhMzQxIn0._zvbPaJoPnivqMEQI5vr4cdylOBODtRoH_G3M7ADp3M`
-  }
-});
-const cache = new InMemoryCache();
-
-const errorLink = onError(({ graphQLErrors, networkError}) =>{
-  if (graphQLErrors){
-
-  }
-
-  if (networkError){
-
-  }
-});
-const link = ApolloLink.from([errorLink, httpLink]);
-
-const operation = {
-  query : SCHEMA.GET_TODOSES,
-}
-
-class ItemStore {
+export class ItemStore {
   items = observable<Item>([]);
 
   isLoading : boolean = false;
@@ -43,14 +13,10 @@ class ItemStore {
   
   @action
   getAllTodos() {
-    execute(link, operation).subscribe({
-      next: ({data}) => {
-        console.log(`received data: ${JSON.stringify(data, null, 2)}`)
-        this.setTodos(data.todoses);
-      },
-      error: error => console.log(`received error ${error}`),
-      complete: () => console.log(`complete`),
-    })
+    getTodos({next : ({data})=>{
+      console.log(`todoses : ${JSON.stringify(data.todoses)}`);
+      this.setTodos(data.todoses);
+    }})
   }
   @action
   setTodos(todos : Item[]){
@@ -60,7 +26,6 @@ class ItemStore {
   }
   @action
   addTodo(input : string) : void {
-    
     this.items.unshift({label: input, completed: false});
   };
 
@@ -83,7 +48,3 @@ class ItemStore {
     // extendObservable(this.items, result);
   }
 }
-
-// const itemStore = new ItemStore();
-
-export default ItemStore;
