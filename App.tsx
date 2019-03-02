@@ -26,14 +26,17 @@ const HomeStack = createStackNavigator({
   Home : {screen : HomeScreen},
   Details : {screen : DetailsScreen}
 })
+HomeStack.navigationOptions = ({ navigation }) => {
+  let drawerLockMode = 'unlocked';
+  if (navigation.state.index > 0) {
+    drawerLockMode = 'locked-closed';
+  }
 
-const RootStack = createStackNavigator({
-  Main : HomeStack,
-  MyModal : ModalScreen
-}, {
-  mode : 'modal',
-  headerMode : 'none'
-})
+  return {
+    drawerLockMode,
+  };
+};
+
 const SecondStack = createStackNavigator({
   Second : { screen : SecondScreen},
   Details : {screen: DetailsScreen}
@@ -44,11 +47,19 @@ const ThirdStack = createStackNavigator({
   Details : { screen : DetailsScreen}
 });
 
-const NavigatorFrame = createAppContainer(createBottomTabNavigator({
-  Home : RootStack,
+const BottomTab = createBottomTabNavigator({
+  Home : HomeStack,
   Second : SecondStack,
   Third : ThirdStack
-}))
+})
+const RootStack = createStackNavigator({
+  Main : BottomTab,
+  MyModal : ModalScreen
+}, {
+  mode : 'modal',
+  headerMode : 'none',
+})
+const NavigatorFrame = createAppContainer(RootStack);
 export default class App extends Component{
   render(){
     return(

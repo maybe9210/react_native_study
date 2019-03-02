@@ -1,23 +1,70 @@
 import React from 'react';
-import {Button,Text,View, StyleSheet} from 'react-native';
+import {Button,Text,View, StyleSheet, CameraRoll, ScrollView, Image} from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 
 interface Props {
   navigation: NavigationScreenProp<any,any>
 }
 
-export default class ModalScreen extends React.Component<Props> {
-  render() {
-    return (
+interface State {
+  photos : any
+}
+
+export default class ModalScreen extends React.Component<Props, State> {
+  static navigationOptions = {header:null};
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      photos : null
+    }
+  }
+  
+  _handleButtonPress = () => {
+    CameraRoll.getPhotos({
+        first: 5,
+        assetType: 'Photos',
+      })
+      .then(r => {
+        this.setState({ photos: r.edges });
+      })
+      .catch((err) => {
+         //Error Loading Images
+      });
+    };
+ render() {
+   if(this.state.photos === null){
+     return (
       <View style={styles.container}>
-        <Text style={styles.text}>This is a modal!</Text>
-        <Button
+        <Button title="Load Images" onPress={this._handleButtonPress} />
+      </View>
+     )
+   }
+
+  return (
+    <View style={styles.container}>
+      <Button title="Load Images" onPress={this._handleButtonPress} />
+      <ScrollView>
+        {this.state.photos.map((p, i) => {
+        return (
+          <Image
+            key={i}
+            style={{
+              width: 100,
+              height: 100,
+            }}
+            source={{ uri: p.node.image.uri }}
+          />
+        );
+      })}
+      </ScrollView>
+      <Button
           onPress={() => this.props.navigation.goBack()}
           title="Dismiss"
         />
-      </View>
-    );
-  }
+    </View>
+  );
+ }
 }
 
 const styles = StyleSheet.create({
