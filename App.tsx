@@ -8,7 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, Modal} from 'react-native';
 
 import { ItemStore } from './app/mobx/itemStore';
 
@@ -17,6 +17,7 @@ import DetailsScreen from './app/screen/DetailScreen';
 import HomeScreen from './app/screen/HomeScreen';
 import SecondScreen from './app/screen/SecondScreen';
 import ThirdScreen from './app/screen/ThirdScreen';
+import ModalScreen from './app/screen/ModalScreen';
 import { Provider } from 'mobx-react';
 
 const itemStore = new ItemStore();
@@ -26,6 +27,13 @@ const HomeStack = createStackNavigator({
   Details : {screen : DetailsScreen}
 })
 
+const RootStack = createStackNavigator({
+  Main : HomeStack,
+  MyModal : ModalScreen
+}, {
+  mode : 'modal',
+  headerMode : 'none'
+})
 const SecondStack = createStackNavigator({
   Second : { screen : SecondScreen},
   Details : {screen: DetailsScreen}
@@ -37,7 +45,7 @@ const ThirdStack = createStackNavigator({
 });
 
 const NavigatorFrame = createAppContainer(createBottomTabNavigator({
-  Home : HomeStack,
+  Home : RootStack,
   Second : SecondStack,
   Third : ThirdStack
 }))

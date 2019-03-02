@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 
 const styles = StyleSheet.create({
   header: {
@@ -12,15 +12,19 @@ const styles = StyleSheet.create({
   },
 })
 
-export default class Title extends Component {
+export default class Title extends Component<{
+  goto : ()=>any
+}> {
 
   render() {
-    const {children} = this.props
+    const {children, goto} = this.props
 
     return (
-      <View style={styles.header}>
-        <Text style={styles.title}>{children}</Text>
-      </View>
+      <TouchableOpacity onPress={goto}>
+        <View style={styles.header}>
+          <Text style={styles.title}>{children}</Text>
+        </View>
+      </TouchableOpacity>
     )
   }
 }

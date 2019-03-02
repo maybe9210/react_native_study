@@ -35,13 +35,12 @@ export default class HomeScreen extends React.Component<Props, State> {
 
   render() {
     const store = this.props.store as ItemStore;
-    // const navigation = this.props.navigation;
+    const navigation = this.props.navigation;
 
-    console.log(typeof this.props.navigation);
     
     return (
       <View style={styles.container}>
-        {/* <Title> Todo List </Title> */}
+        <Title goto={()=> navigation.navigate('MyModal')}>+</Title>
         <Input
           placeholder={'Enter an item!'}
           onSubmit={store.addTodo.bind(store)}

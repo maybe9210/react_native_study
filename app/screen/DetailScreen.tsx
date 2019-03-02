@@ -4,7 +4,7 @@ import { NavigationActions } from 'react-navigation';
 
 interface Pass{
   navigation : {
-    getParam : any
+    getParam : (title:string, defaultTitle:string)=>string
   }
 }
 export default class DetailsScreen extends React.Component {
