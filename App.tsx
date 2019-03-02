@@ -20,6 +20,12 @@ import { ItemStore } from './app/mobx/itemStore';
 import { Item } from './app/const';
 import {Camera, Photolist} from './app/components/Camera';
 
+import { createStackNavigator, createAppContainer, createBottomTabNavigator } from 'react-navigation';
+import DetailsScreen from './app/screen/DetailScreen';
+import HomeScreen from './app/screen/HomeScreen';
+import SecondScreen from './app/screen/SecondScreen';
+import ThirdScreen from './app/screen/ThirdScreen';
+
 type Props = {
   store? : ItemStore
 }
@@ -65,11 +71,32 @@ class Container extends Component<Props, State> {
   }
 }
 const itemStore = new ItemStore();
+
+const HomeStack = createStackNavigator({
+  Home : {screen : HomeScreen},
+  Details : {screen : DetailsScreen}
+})
+
+const SecondStack = createStackNavigator({
+  Second : { screen : SecondScreen},
+  Details : {screen: DetailsScreen}
+});
+
+const ThirdStack = createStackNavigator({
+  Thrid : { screen : ThirdScreen },
+  Details : { screen : DetailsScreen}
+});
+
+const Frame = createAppContainer(createBottomTabNavigator({
+  Home : HomeStack,
+  Second : SecondStack,
+  Third : ThirdStack
+}))
 export default class App extends Component{
   render(){
     return(
         <Provider store={itemStore}>
-          <Container/>
+          <Frame/>
         </Provider>
     )
   }

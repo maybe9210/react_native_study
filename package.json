@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/react": "^16.8.2",
     "@types/react-native": "^0.57.34",
+    "@types/react-navigation": "^3.0.4",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "24.0.0",
     "jest": "24.0.0",
