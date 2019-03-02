@@ -1,6 +1,5 @@
 import React, { Component, /*PropTypes*/ } from 'react'
 import { TextInput, StyleSheet } from 'react-native'
-import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 
 

@@ -77,6 +77,11 @@ export class ItemStore {
   };
 
   removeCompleted() : void {
+    const completed = this.items.filter((item,i) => item.completed === true);
+    if(completed.length === 0){
+      return;
+    }
+    
     removeManyTodos({completed_not : false}, {
       next : ({data, errors, loading}) => {
         if(errors) {

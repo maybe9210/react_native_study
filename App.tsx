@@ -18,6 +18,7 @@ import Footer from './app/components/Footer';
 
 import { ItemStore } from './app/mobx/itemStore';
 import { Item } from './app/const';
+import {Camera, Photolist} from './app/components/Camera';
 
 type Props = {
   store? : ItemStore
@@ -47,12 +48,15 @@ class Container extends Component<Props, State> {
           onSubmit={store.addTodo.bind(store)}
           />
         <View style={styles.divider}/>
+        
         <List
           items={store.items}
           onRemoveItem={store.removeItem.bind(store)}
           onToggleItemCompleted={store.toggleCompleted.bind(store)}
           />
         <View style={styles.divider} />
+        <Camera />
+        <Photolist />
         <Footer  
           onRemoveCompleted={store.removeCompleted.bind(store)} 
           />
