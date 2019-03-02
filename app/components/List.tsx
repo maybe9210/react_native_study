@@ -11,6 +11,47 @@ import Checkbox from './Checkbox'
 import { observer } from 'mobx-react';
 import { Item, ItemCallback } from '../const';
 
+
+@observer
+export default class List extends Component <{
+  onToggleItemCompleted : ItemCallback, 
+  onRemoveItem : ItemCallback,
+  navigate : any,
+  items: Item[]}>{
+
+  renderItem = (item : Item, i : number) => {
+    const {onToggleItemCompleted, onRemoveItem, navigate} = this.props
+    const itemStyle = item.completed ? [styles.item, styles.completed] : styles.item
+
+    return (
+      <View key={i} style={itemStyle}>
+        <TouchableOpacity onPress={()=>{navigate("Details",{title:item.label})}}>
+          <Text> {item.label} </Text>
+        </TouchableOpacity>
+        <View style={styles.rightSection}>
+          <Checkbox
+          isChecked={item.completed}
+          onToggle={() => onToggleItemCompleted(i)}
+          />
+          <TouchableOpacity onPress={()=>onRemoveItem(i)}>
+            <Text style={styles.remove}> &times; </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  render() {
+    const {items} = this.props
+
+    return (
+      <ScrollView style={styles.container}>
+        {items.map(this.renderItem)}
+      </ScrollView>
+    )
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -37,40 +78,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.8)',
   }
 })
-
-@observer
-export default class List extends Component <{
-  onToggleItemCompleted : ItemCallback, onRemoveItem : ItemCallback, items: Item[]}>{
-
-  renderItem = (item : Item, i : number) => {
-    const {onToggleItemCompleted, onRemoveItem} = this.props
-    const itemStyle = item.completed ? [styles.item, styles.completed] : styles.item
-
-    // console.log(item.label, item.completed);
-    // console.log('id : ', item.id);
-    return (
-      <View key={i} style={itemStyle}>
-        <Text> {item.label} </Text>
-        <View style={styles.rightSection}>
-          <Checkbox
-          isChecked={item.completed}
-          onToggle={() => onToggleItemCompleted(i)}
-          />
-          <TouchableOpacity onPress={()=>onRemoveItem(i)}>
-            <Text style={styles.remove}> &times; </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    )
-  }
-
-  render() {
-    const {items} = this.props
-
-    return (
-      <ScrollView style={styles.container}>
-        {items.map(this.renderItem)}
-      </ScrollView>
-    )
-  }
-}
