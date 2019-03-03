@@ -26,16 +26,6 @@ const HomeStack = createStackNavigator({
   Home : {screen : HomeScreen},
   Details : {screen : DetailsScreen}
 })
-HomeStack.navigationOptions = ({ navigation }) => {
-  let drawerLockMode = 'unlocked';
-  if (navigation.state.index > 0) {
-    drawerLockMode = 'locked-closed';
-  }
-
-  return {
-    drawerLockMode,
-  };
-};
 
 const SecondStack = createStackNavigator({
   Second : { screen : SecondScreen},
