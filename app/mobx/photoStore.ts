@@ -1,4 +1,4 @@
-import {observable, action} from 'mobx';
+import {observable, action, computed} from 'mobx';
 import { CameraRollEdgeInfo } from 'react-native';
 
 export interface EdgeInfo {
@@ -44,8 +44,14 @@ export class PhotoStore {
   @action
   toggleSelection(index : number) {
     this.selections[index] = !this.selections[index];
+    console.log(this.selections);
   }
 
+  @computed
+  get selectedCount() : number{
+    const selected = this.selections.filter((value, i) => value === true);
+    return selected.length;
+  }
   getSelectedPhotos() : EdgeInfo[]{
 
     return this.photos;

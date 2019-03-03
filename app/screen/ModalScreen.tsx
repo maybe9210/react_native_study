@@ -17,6 +17,7 @@ export default class ModalScreen extends React.Component<Props> {
   static navigationOptions = {header:null};
   constructor(props: Props) {
     super(props);
+    this._getCapture();
   }
   camera : RNCamera | null = null;
   pivot : string = '';
@@ -50,25 +51,26 @@ export default class ModalScreen extends React.Component<Props> {
     const store = rootStore.photoStore as PhotoStore;
     const toggleStyles = StyleSheet.create({
       box: {
-        height: 80,
-        width: 80,
-        borderWidth: 4,
-        borderColor: 'skyblue',
+        height: 90,
+        width: 90,
+        borderWidth: 2,
+        borderColor: '#ffffffaa',
       },
       inner: {
         flex: 1,
         margin: 5,
-        backgroundColor: '#b0e0e6aa',
+        backgroundColor: '#ffffffaa',
       },
     })
     if(store.photos !== null) {
       return (
       <ScrollView style={styles.bottomContainer}
         horizontal={true}
+        showsHorizontalScrollIndicator={false}
       >
         {store.photos.map((p:any,i:number)=> 
         <ImageBackground key={i}
-          style={styles.square80}
+          style={styles.square90}
           source={{ uri: p.node.image.uri }}
         >
           <Checkbox isChecked={store.selections[i]}
@@ -81,7 +83,12 @@ export default class ModalScreen extends React.Component<Props> {
       return (<View><Text>Empty Capture</Text></View>)
     }
   }
+
   render() {
+    const rootStore = this.props.store as RootStore;
+    const store = rootStore.photoStore as PhotoStore;
+    const selected = store.selections.filter((value, i) => value === true);
+
     return (
       <View style={styles.container}>
         <RNCamera
@@ -98,14 +105,26 @@ export default class ModalScreen extends React.Component<Props> {
           }}
           captureAudio={false}
         />
-        <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>
-          <TouchableOpacity onPress={this.takePicture.bind(this)} style={styles.capture}>
-            <Text style={{ fontSize: 14 }}> SNAP </Text>
-          </TouchableOpacity>
-        </View>
         <View style={{flex:1}}>
           {this.renderPhotos()}
         </View>
+        <View style={styles.footerButtos}>
+          <View style={{width : 100}}>
+            <Button
+              onPress={() => this.props.navigation.goBack()}
+              title="Dismiss"
+            />
+          </View>
+          <TouchableOpacity onPress={this.takePicture.bind(this)} style={styles.capture} />
+          <View style={{width : 100}}>
+            <Button
+              disabled={selected.length === 0}
+              onPress={() => {console.log(store.selections)}}
+              title={`Submit ${selected.length}`}
+            />
+          </View>
+        </View>
+        
       </View>
     );
   }
@@ -147,10 +166,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
+  footerButtos : {
+    flex: 1, 
+    flexDirection: 'row', 
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
   capture: {
     flex: 0,
     backgroundColor: '#ddd',
-    borderRadius: 5,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     padding: 15,
     paddingHorizontal: 20,
     alignSelf: 'center',
@@ -160,9 +187,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row'
   },
-  square80 : {
-    height : 80,
-    width : 80
+  square90 : {
+    height : 90,
+    width : 90
   },
   box: {
     height: 20,

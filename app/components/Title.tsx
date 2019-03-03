@@ -4,11 +4,12 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 const styles = StyleSheet.create({
   header: {
     backgroundColor: 'skyblue',
-    padding: 15,
+    padding: 5,
   },
   title: {
     textAlign: 'center',
     color: 'white',
+    fontSize: 40
   },
 })
 
