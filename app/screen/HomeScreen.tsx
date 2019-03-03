@@ -7,12 +7,12 @@ import Input from '../components/Input';
 import List from '../components/List';
 import Footer from '../components/Footer';
 import { Item } from '../const';
-import { ItemStore } from '../mobx/itemStore';
-import {Camera, Photolist} from '../components/Camera';
+// import { ItemStore } from '../mobx/itemStore';
 import { NavigationScreenProp } from 'react-navigation';
+import { RootStore, ItemStore} from '../mobx';
 
 interface Props {
-  store? : ItemStore,
+  store? : RootStore,
   navigation: NavigationScreenProp<any,any>
 }
 interface State {
@@ -28,13 +28,14 @@ export default class HomeScreen extends React.Component<Props, State> {
 
   constructor(props : Props){
     super(props);
-    const store = this.props.store as ItemStore;
+    const store = this.props.store as RootStore;
     
-    store.getAllTodos();
+    store.itemStore.getAllTodos();
   }
 
   render() {
-    const store = this.props.store as ItemStore;
+    const rootStore = this.props.store as RootStore;
+    const store = rootStore.itemStore as ItemStore;
     const navigation = this.props.navigation;
 
     

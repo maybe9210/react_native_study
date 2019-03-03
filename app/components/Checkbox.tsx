@@ -3,7 +3,7 @@ import { Component, /*PropTypes*/ } from 'react'
 import { View, StyleSheet, TouchableOpacity, GestureResponderEvent } from 'react-native'
 import { observer } from 'mobx-react';
 
-const styles = StyleSheet.create({
+const defaultStyles = StyleSheet.create({
   box: {
     height: 20,
     width: 20,
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
 type Callback = (event : GestureResponderEvent) => void;
 
 @observer
-export default class Checkbox extends Component<{onToggle : Callback, isChecked : boolean}> {
+export default class Checkbox extends Component<{onToggle : Callback, isChecked : boolean, styles?:any}> {
 
   // static propTypes = {
   //   onToggle: PropTypes.func,
@@ -28,7 +28,7 @@ export default class Checkbox extends Component<{onToggle : Callback, isChecked 
 
   render() {
     const {onToggle , isChecked } = this.props;
-
+    const styles = this.props.styles || defaultStyles;
     return (
       <TouchableOpacity onPress={onToggle}>
         <View style={styles.box}>

@@ -8,9 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, Modal} from 'react-native';
-
-import { ItemStore } from './app/mobx/itemStore';
+import {RootStore} from './app/mobx';
 
 import { createStackNavigator, createAppContainer, createBottomTabNavigator } from 'react-navigation';
 import DetailsScreen from './app/screen/DetailScreen';
@@ -20,7 +18,6 @@ import ThirdScreen from './app/screen/ThirdScreen';
 import ModalScreen from './app/screen/ModalScreen';
 import { Provider } from 'mobx-react';
 
-const itemStore = new ItemStore();
 
 const HomeStack = createStackNavigator({
   Home : {screen : HomeScreen},
@@ -53,7 +50,7 @@ const NavigatorFrame = createAppContainer(RootStack);
 export default class App extends Component{
   render(){
     return(
-        <Provider store={itemStore}>
+        <Provider store={new RootStore()}>
           <NavigatorFrame/>
         </Provider>
     )

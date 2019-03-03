@@ -1,50 +1,42 @@
 import React from 'react';
-import {Button,Text,View, StyleSheet, CameraRoll, ScrollView, Image, TouchableOpacity} from 'react-native';
+import {Button,Text,View, StyleSheet, CameraRoll, ScrollView, Image, TouchableOpacity, ImageBackground} from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 import { RNCamera } from 'react-native-camera';
+import { inject, observer } from 'mobx-react';
+import { RootStore, PhotoStore } from '../mobx';
+import Checkbox from '../components/Checkbox';
 
 interface Props {
-  navigation: NavigationScreenProp<any,any>
+  navigation: NavigationScreenProp<any,any>,
+  store? : RootStore
 }
 
-interface State {
-  photos : any,
-  lastCursor : string
-}
-
-export default class ModalScreen extends React.Component<Props, State> {
+@inject("store")
+@observer
+export default class ModalScreen extends React.Component<Props> {
   static navigationOptions = {header:null};
   constructor(props: Props) {
     super(props);
-
-    this.state = {
-      photos : null,
-      lastCursor : ''
-    }
   }
   camera : RNCamera | null = null;
   pivot : string = '';
   
   _getCapture = () => {
     const options:any = {
-      first: 5,
+      first: 10,
       assetType: 'Photos'
     }
-    if (this.state.lastCursor){
-      options.after = this.state.lastCursor
-    }
+    const rootStore = this.props.store as RootStore;
+    const store = rootStore.photoStore as PhotoStore;
     
     CameraRoll.getPhotos(options)
     .then(r => {
-      this.setState({ photos: r.edges });
+      store.setPhotos(r.edges);
       console.log('end_cursor : ',r.page_info.end_cursor);
-      console.log(`Get captures ${this.state.photos}`);
-      if(this.state.lastCursor === ''){
-        this.setState({
-          lastCursor : r.page_info.end_cursor,
-          ...this.state
-        })
-        console.log('set_endcursor : ',this.state.lastCursor);
+      console.log(`Get captures ${store.photos}`);
+      if(store.lastCursor === ''){
+        store.setLastCursor(r.page_info.end_cursor || '');
+        console.log('set_endcursor : ',store.lastCursor);
       }
     })
     .catch((err) => {
@@ -54,19 +46,36 @@ export default class ModalScreen extends React.Component<Props, State> {
   };
 
   renderPhotos(){
-    if(this.state.photos !== null) {
+    const rootStore = this.props.store as RootStore;
+    const store = rootStore.photoStore as PhotoStore;
+    const toggleStyles = StyleSheet.create({
+      box: {
+        height: 80,
+        width: 80,
+        borderWidth: 4,
+        borderColor: 'skyblue',
+      },
+      inner: {
+        flex: 1,
+        margin: 5,
+        backgroundColor: '#b0e0e6aa',
+      },
+    })
+    if(store.photos !== null) {
       return (
       <ScrollView style={styles.bottomContainer}
         horizontal={true}
       >
-        {this.state.photos.map((p:any,i:number)=> <Image key={i}
-          style={{
-            width: 80,
-            height: 80,
-          }}
+        {store.photos.map((p:any,i:number)=> 
+        <ImageBackground key={i}
+          style={styles.square80}
           source={{ uri: p.node.image.uri }}
-        />)
-        }
+        >
+          <Checkbox isChecked={store.selections[i]}
+            styles={toggleStyles}
+            onToggle={()=>{store.toggleSelection(i)}}
+          />
+        </ImageBackground>)}
       </ScrollView>)
     } else {
       return (<View><Text>Empty Capture</Text></View>)
@@ -113,13 +122,10 @@ export default class ModalScreen extends React.Component<Props, State> {
       const data = await camera.takePictureAsync(options);
       console.log(data.uri);
 
-      CameraRoll.saveToCameraRoll(data.uri,"photo")
+      CameraRoll.saveToCameraRoll(data.uri, "photo")
         .then(result=>{
-          
           console.log(result);
-          
           this._getCapture();
-          // console.log(camera.capture());
         })
         .catch(reason => {
           console.error(reason);
@@ -143,7 +149,7 @@ const styles = StyleSheet.create({
   },
   capture: {
     flex: 0,
-    backgroundColor: '#fff',
+    backgroundColor: '#ddd',
     borderRadius: 5,
     padding: 15,
     paddingHorizontal: 20,
@@ -153,5 +159,20 @@ const styles = StyleSheet.create({
   bottomContainer: {
     flex: 1,
     flexDirection: 'row'
-  }
+  },
+  square80 : {
+    height : 80,
+    width : 80
+  },
+  box: {
+    height: 20,
+    width: 20,
+    borderWidth: 2,
+    borderColor: 'red',
+  },
+  inner: {
+    flex: 1,
+    margin: 2,
+    backgroundColor: 'rgba(255,50,50,0.8)',
+  },
 });
