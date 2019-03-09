@@ -5,7 +5,6 @@ import { RNCamera, TakePictureResponse } from 'react-native-camera';
 import { inject, observer } from 'mobx-react';
 import { RootStore, PhotoStore } from '../mobx';
 import {Checkbox} from '../components';
-import { uploadImage } from '../mobx/photoStore';
 
 interface Props {
   navigation: NavigationScreenProp<any,any>,
@@ -33,8 +32,8 @@ export default class ModalScreen extends React.Component<Props> {
     CameraRoll.getPhotos(options)
     .then(r => {
       // store.setPhotos(r.edges);
-      console.log('end_cursor : ',r.page_info.end_cursor);
-      console.log(`Get captures ${store.photos}`);
+      // console.log('end_cursor : ',r.page_info.end_cursor);
+      // console.log(`Get captures ${store.photos}`);
       // if(store.lastCursor === ''){
       //   store.setLastCursor(r.page_info.end_cursor || '');
       //   console.log('set_endcursor : ',store.lastCursor);

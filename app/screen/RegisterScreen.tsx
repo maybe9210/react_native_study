@@ -4,7 +4,7 @@ import {Input, Title } from '../components';
 import { RootStore, PhotoStore } from '../mobx';
 import { NavigationScreenProp } from 'react-navigation';
 import { inject, observer } from 'mobx-react';
-
+import { Bar } from 'react-native-progress';
 const { width } = Dimensions.get('window');
 
 interface Props {
@@ -67,6 +67,7 @@ export class RegisterScreen extends Component<Props>{
             <Input placeholder={'Enter patient name'}
               onSubmit={this._submit.bind(this)}
               autoFocus={true}
+              keepContent={true}
               />
           </View>
         </View>
@@ -78,11 +79,18 @@ export class RegisterScreen extends Component<Props>{
   renderUploadState() {
     const rootStore = this.props.store as RootStore;
     const store = rootStore.photoStore as PhotoStore;
-
-    if(store.uploadState.state === 'upload-first') {
-      return (<View><Text>{store.uploadState.state} Total : {store.uploadState.targetCount} Now : {store.uploadState.succedCount}</Text></View>)
-    } else if(store.uploadState.state === 'upload-second') {
-      return (<View><Text>{store.uploadState.state}</Text></View>)
+    let ratio = 0.0;
+    if(store.uploadState.targetCount === 0){
+      ratio = 0.0;
+    } else {
+      ratio = store.uploadState.succedCount / store.uploadState.targetCount;
+    }
+    if(store.uploadState.state === 'upload-first' ||
+      store.uploadState.state === 'upload-second'
+    ) {
+      return (<Bar width={320} height={30} borderRadius={20}
+        progress={ratio} style={styles.progressBar} borderWidth={3}
+        indeterminate={true}/>)
     } else if(store.uploadState.state === 'error') {
       return (<View><Text>{store.uploadState.state}</Text></View>)
     } else if(store.uploadState.state === 'finish') {
@@ -127,5 +135,8 @@ const styles = StyleSheet.create({
     flex : 1,
     width : width - 80,
     margin : 40
+  },
+  progressBar : {
+    margin : 27.5
   }
 })

@@ -13,7 +13,8 @@ type Callback = (event : any) => void;
 interface Props {
   onSubmit : Callback, 
   placeholder : string,
-  autoFocus? : boolean | false
+  autoFocus? : boolean | false,
+  keepContent? : boolean | false
 }
 interface State {
   inputText: string
@@ -37,13 +38,15 @@ export default class Input extends Component <Props, State>{
   }
 
   onSubmitEditing = () => {
-    const {onSubmit} = this.props
+    const {onSubmit, keepContent} = this.props
     const {inputText} = this.state
 
     
     if (!inputText) return
     onSubmit(inputText)
-    this.setState({inputText: ''})
+    if(!keepContent){
+      this.setState({inputText: ''})
+    }
   }
 
   render() {

@@ -36,6 +36,14 @@ export class PhotoStore {
     this.uploadState.succedCount = this.uploadState.succedCount + 1;
   }
 
+  @computed get progressRate(){
+    if(this.uploadState.targetCount === 0){
+      return 0.0;
+    }
+
+    return this.uploadState.succedCount / this.uploadState.targetCount;
+  }
+
   @action addPatient(name : string, onsuccess :()=>void){
     const selecteds = this.cache.filter(item => item.selected === true);
     this.uploadState.state = 'upload-first'
