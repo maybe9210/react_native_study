@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import {Button,Text,View, StyleSheet, ScrollView, Image, TouchableOpacity, ImageBackground, Dimensions, ImageStore} from 'react-native';
+import {Button,Text,View, StyleSheet, ScrollView, Image, TouchableOpacity, ImageBackground, Dimensions, ImageStore, CameraRoll, Keyboard} from 'react-native';
 import {Input, Title } from '../components';
 import { RootStore, PhotoStore } from '../mobx';
 import { NavigationScreenProp } from 'react-navigation';
 import { inject, observer } from 'mobx-react';
-import { uploadImage } from '../mobx/photoStore';
 
 const { width } = Dimensions.get('window');
 
@@ -29,9 +28,9 @@ export class RegisterScreen extends Component<Props>{
     const rootStore = this.props.store as RootStore;
     const store = rootStore.photoStore as PhotoStore;
     const selecteds = store.cache.filter(item => item.selected === true);
-    selecteds.map((p) => {
-      console.log(p);
-    })  
+    // selecteds.map((p) => {
+    //   console.log(p);
+    // })  
     return (
       <ScrollView horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -71,26 +70,47 @@ export class RegisterScreen extends Component<Props>{
               />
           </View>
         </View>
+        {this.renderUploadState()}
       </View>
     );
   }
 
-  _submit(input:string) {
+  renderUploadState() {
     const rootStore = this.props.store as RootStore;
     const store = rootStore.photoStore as PhotoStore;
 
+    if(store.uploadState.state === 'upload-first') {
+      return (<View><Text>{store.uploadState.state} Total : {store.uploadState.targetCount} Now : {store.uploadState.succedCount}</Text></View>)
+    } else if(store.uploadState.state === 'upload-second') {
+      return (<View><Text>{store.uploadState.state}</Text></View>)
+    } else if(store.uploadState.state === 'error') {
+      return (<View><Text>{store.uploadState.state}</Text></View>)
+    } else if(store.uploadState.state === 'finish') {
+      return (<View><Text>{store.uploadState.state}</Text></View>)
+    } else {
+      return 
+    }
+  }
+  _submit(input:string) {
+    const rootStore = this.props.store as RootStore;
+    const store = rootStore.photoStore as PhotoStore;
+    const selecteds = store.cache.filter(item => item.selected === true);
     console.log(`환자 이름 : ${input}`);
-    // const image = store.selectedPhotos[0].node.image;
+
+    Keyboard.dismiss();
+    selecteds.map(item => {
+      CameraRoll.saveToCameraRoll(item.photo.uri, "photo")
+        .then(result=>{
+          console.log(result);
+        })
+        .catch(reason => {
+          console.error(reason);
+        })
+    });
     
-    // uploadImage(image.uri)
-    // console.log(image);
-    // ImageStore.getBase64ForTag(image.uri, (base64)=>{
-    //   uploadImage(image.filename, base64);
-    // }, err => {
-    //   console.log(err)
-    // });
-    // store.addPatient(input);
-    this.props.navigation.navigate('Home');
+    store.addPatient(input, ()=> {
+      this.props.navigation.navigate('Home');
+    });
   }
 }
 

@@ -153,11 +153,11 @@ export function removeManyTodos(chunk : any, res : response) {
   return makeSchema(operation, res);
 }
 
-interface ImageType {
+export interface ImageType {
   fileName : string,
   handle : string,
-  height : number,
-  width : number
+  size : number,
+  mimeType : string
 }
 interface CreatePatientType {
   name : string,

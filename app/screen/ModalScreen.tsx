@@ -144,18 +144,6 @@ export default class ModalScreen extends React.Component<Props> {
       const store = rootStore.photoStore as PhotoStore;
 
       store.addPhotoInCache(data);
-      // const filename = data.uri.split('/').pop();
-      
-      // uploadImage(filename, data.base64);
-      // uploadImage(filename, data.base64);
-      // CameraRoll.saveToCameraRoll(data.uri, "photo")
-      //   .then(result=>{
-      //     console.log(result);
-      //     this._getCapture();
-      //   })
-      //   .catch(reason => {
-      //     console.error(reason);
-      //   })
     }
   };
 }
