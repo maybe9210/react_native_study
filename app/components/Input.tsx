@@ -12,7 +12,8 @@ const styles = StyleSheet.create({
 type Callback = (event : any) => void;
 interface Props {
   onSubmit : Callback, 
-  placeholder : string
+  placeholder : string,
+  autoFocus? : boolean | false
 }
 interface State {
   inputText: string
@@ -46,7 +47,7 @@ export default class Input extends Component <Props, State>{
   }
 
   render() {
-    const { placeholder } = this.props
+    const { placeholder, autoFocus } = this.props
     const { inputText } = this.state
 
     return (
@@ -54,6 +55,7 @@ export default class Input extends Component <Props, State>{
       style={styles.input}
       placeholder={placeholder}
       value={inputText}
+      autoFocus={autoFocus}
       onChangeText={this.onChangeText}
       onSubmitEditing={this.onSubmitEditing}
       blurOnSubmit={false}

@@ -49,6 +49,21 @@ const DELETE_MANY_TODOS = gql`
   }
 `;
 
+const CREATE_PATIENT = gql`
+  mutation CreatePatient($data : PatientCreateInput!){
+    createPatient(data : $data){
+      id
+      name
+      checkFirst
+      checkSecond
+      picture {
+        id
+        url
+      }
+    }
+  }
+`;
+
 const httpLink = new HttpLink({
   uri : 'https://api-apeast.graphcms.com/v1/cjshaau0241lj01ckeov1u72p/master',
   headers : {
@@ -133,6 +148,31 @@ export function removeManyTodos(chunk : any, res : response) {
     query : DELETE_MANY_TODOS,
     variables : {
       where : chunk
+    }
+  }
+  return makeSchema(operation, res);
+}
+
+interface ImageType {
+  fileName : string,
+  handle : string,
+  height : number,
+  width : number
+}
+interface CreatePatientType {
+  name : string,
+  checkFirst : boolean | false,
+  checkSecond : boolean | false,
+  picture : {
+    create : ImageType[]
+  }
+}
+export function createPatient(chunk : CreatePatientType, res : response){
+  console.log(chunk);
+  const operation = {
+    query: CREATE_PATIENT,
+    variables : {
+      data : chunk
     }
   }
   return makeSchema(operation, res);

@@ -1,15 +1,13 @@
 import React from 'react';
-import {Button,Text,View, StyleSheet} from 'react-native';
+import {Button,Text,View, StyleSheet, CameraRoll} from 'react-native';
 import { observer, inject, Provider } from 'mobx-react';
 
-import Title from '../components/Title';
-import Input from '../components/Input';
-import List from '../components/List';
-import Footer from '../components/Footer';
+import { Input, Title, List } from '../components';
 import { Item } from '../const';
-// import { ItemStore } from '../mobx/itemStore';
+
 import { NavigationScreenProp } from 'react-navigation';
 import { RootStore, ItemStore} from '../mobx';
+import { isComputedProp } from 'mobx';
 
 interface Props {
   store? : RootStore,
@@ -30,7 +28,7 @@ export default class HomeScreen extends React.Component<Props, State> {
     super(props);
     const store = this.props.store as RootStore;
     
-    store.itemStore.getAllTodos();
+    // store.itemStore.getAllTodos();
   }
 
   render() {
@@ -41,7 +39,7 @@ export default class HomeScreen extends React.Component<Props, State> {
     
     return (
       <View style={styles.container}>
-        <Title goto={()=> navigation.navigate('MyModal')}>+</Title>
+        <Title goto={()=> navigation.navigate('MyModal')} fontSize={30}>+</Title>
         <Input
           placeholder={'Enter an item!'}
           onSubmit={store.addTodo.bind(store)}

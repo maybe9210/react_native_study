@@ -1,10 +1,11 @@
 import React from 'react';
 import {Button,Text,View, StyleSheet, CameraRoll, ScrollView, Image, TouchableOpacity, ImageBackground} from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
-import { RNCamera } from 'react-native-camera';
+import { RNCamera, TakePictureResponse } from 'react-native-camera';
 import { inject, observer } from 'mobx-react';
 import { RootStore, PhotoStore } from '../mobx';
-import Checkbox from '../components/Checkbox';
+import {Checkbox} from '../components';
+import { uploadImage } from '../mobx/photoStore';
 
 interface Props {
   navigation: NavigationScreenProp<any,any>,
@@ -17,7 +18,6 @@ export default class ModalScreen extends React.Component<Props> {
   static navigationOptions = {header:null};
   constructor(props: Props) {
     super(props);
-    this._getCapture();
   }
   camera : RNCamera | null = null;
   pivot : string = '';
@@ -32,13 +32,13 @@ export default class ModalScreen extends React.Component<Props> {
     
     CameraRoll.getPhotos(options)
     .then(r => {
-      store.setPhotos(r.edges);
+      // store.setPhotos(r.edges);
       console.log('end_cursor : ',r.page_info.end_cursor);
       console.log(`Get captures ${store.photos}`);
-      if(store.lastCursor === ''){
-        store.setLastCursor(r.page_info.end_cursor || '');
-        console.log('set_endcursor : ',store.lastCursor);
-      }
+      // if(store.lastCursor === ''){
+      //   store.setLastCursor(r.page_info.end_cursor || '');
+      //   console.log('set_endcursor : ',store.lastCursor);
+      // }
     })
     .catch((err) => {
       console.error(err);
@@ -51,8 +51,8 @@ export default class ModalScreen extends React.Component<Props> {
     const store = rootStore.photoStore as PhotoStore;
     const toggleStyles = StyleSheet.create({
       box: {
-        height: 90,
-        width: 90,
+        height: 80,
+        width: 80,
         borderWidth: 2,
         borderColor: '#ffffffaa',
       },
@@ -62,18 +62,18 @@ export default class ModalScreen extends React.Component<Props> {
         backgroundColor: '#ffffffaa',
       },
     })
-    if(store.photos !== null) {
+    if(store.cache !== null) {
       return (
       <ScrollView style={styles.bottomContainer}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
       >
-        {store.photos.map((p:any,i:number)=> 
+        {store.cache.map((p,i)=> 
         <ImageBackground key={i}
           style={styles.square90}
-          source={{ uri: p.node.image.uri }}
+          source={{ uri: p.photo.uri }}
         >
-          <Checkbox isChecked={store.selections[i]}
+          <Checkbox isChecked={store.cache[i].selected}
             styles={toggleStyles}
             onToggle={()=>{store.toggleSelection(i)}}
           />
@@ -87,12 +87,12 @@ export default class ModalScreen extends React.Component<Props> {
   render() {
     const rootStore = this.props.store as RootStore;
     const store = rootStore.photoStore as PhotoStore;
-    const selected = store.selections.filter((value, i) => value === true);
+    const selected = store.cache.filter((item, i) => item.selected === true);
 
     return (
       <View style={styles.container}>
         <RNCamera
-          ref={ref => {
+          ref={(ref:RNCamera) => {
             this.camera = ref;
           }}
           style={styles.preview}
@@ -100,9 +100,6 @@ export default class ModalScreen extends React.Component<Props> {
           flashMode={RNCamera.Constants.FlashMode.off}
           permissionDialogTitle={'Permission to use camera'}
           permissionDialogMessage={'We need your permission to use your camera phone'}
-          onGoogleVisionBarcodesDetected={({ barcodes }) => {
-            console.log(barcodes);
-          }}
           captureAudio={false}
         />
         <View style={{flex:1}}>
@@ -111,7 +108,7 @@ export default class ModalScreen extends React.Component<Props> {
         <View style={styles.footerButtos}>
           <View style={{width : 100}}>
             <Button
-              onPress={() => this.props.navigation.goBack()}
+              onPress={() => this.props.navigation.navigate('Home')}
               title="Dismiss"
             />
           </View>
@@ -119,7 +116,8 @@ export default class ModalScreen extends React.Component<Props> {
           <View style={{width : 100}}>
             <Button
               disabled={selected.length === 0}
-              onPress={() => {console.log(store.selections)}}
+              onPress={() => {
+                this.props.navigation.navigate('Registration')}}
               title={`Submit ${selected.length}`}
             />
           </View>
@@ -130,25 +128,34 @@ export default class ModalScreen extends React.Component<Props> {
   }
 
   takePicture = async function(this : any) {
-    const camera = this.camera;
+    const camera : RNCamera = this.camera;
 
     if (camera) {
       const options = { 
         quality: 0.5, 
         base64: true,
-        forceUpOrientation : true
+        forceUpOrientation : true,
+        width: 1024
       };
-      const data = await camera.takePictureAsync(options);
+      const data:TakePictureResponse = await camera.takePictureAsync(options);
       console.log(data.uri);
+      
+      const rootStore = this.props.store as RootStore;
+      const store = rootStore.photoStore as PhotoStore;
 
-      CameraRoll.saveToCameraRoll(data.uri, "photo")
-        .then(result=>{
-          console.log(result);
-          this._getCapture();
-        })
-        .catch(reason => {
-          console.error(reason);
-        })
+      store.addPhotoInCache(data);
+      // const filename = data.uri.split('/').pop();
+      
+      // uploadImage(filename, data.base64);
+      // uploadImage(filename, data.base64);
+      // CameraRoll.saveToCameraRoll(data.uri, "photo")
+      //   .then(result=>{
+      //     console.log(result);
+      //     this._getCapture();
+      //   })
+      //   .catch(reason => {
+      //     console.error(reason);
+      //   })
     }
   };
 }
@@ -188,8 +195,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   square90 : {
-    height : 90,
-    width : 90
+    height : 80,
+    width : 80,
+    margin : 5
   },
   box: {
     height: 20,

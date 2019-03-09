@@ -17,6 +17,7 @@ import SecondScreen from './app/screen/SecondScreen';
 import ThirdScreen from './app/screen/ThirdScreen';
 import ModalScreen from './app/screen/ModalScreen';
 import { Provider } from 'mobx-react';
+import { RegisterScreen } from './app/screen/RegisterScreen';
 
 
 const HomeStack = createStackNavigator({
@@ -39,9 +40,14 @@ const BottomTab = createBottomTabNavigator({
   Second : SecondStack,
   Third : ThirdStack
 })
+
+const RegisterStack = createStackNavigator({
+  MyModal : ModalScreen,
+  Registration : RegisterScreen
+})
 const RootStack = createStackNavigator({
   Main : BottomTab,
-  MyModal : ModalScreen
+  MyModal : RegisterStack
 }, {
   mode : 'modal',
   headerMode : 'none',
